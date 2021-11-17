@@ -26,7 +26,6 @@ Route::post('/second-product-check', 'HomeController@secondProductCheck');
 Route::post('/second-organic', 'HomeController@secondOrganic');
 Route::post('/second-organic-check', 'HomeController@secondOrganicCheck');
 
-
 Route::post('/ending', 'HomeController@ending');
 
 

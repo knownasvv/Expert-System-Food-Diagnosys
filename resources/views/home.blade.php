@@ -44,8 +44,8 @@
                 <form action="{{ url("/second-product") }}" method="post" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     <h5>Are there any of the substances in the product that suits with below?.</h5>
-                    <input type="checkbox" name="substances[]" value="subs1"> Substance 1<br>
-                    <input type="checkbox" name="substances[]" value="subs2"> Substance 2<br>
+                    <input type="checkbox" name="substances[]" value="Carbohydrate">Carbohydrate<br>
+                    <input type="checkbox" name="substances[]" value="Protein">Protein<br>
                     <input type="checkbox" name="substances[]" value="not-listed"> Not listed<br><br>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
@@ -84,8 +84,8 @@
                 {{ csrf_field() }}
                 <h5>Are there any of the substance in the food you know and suits list below?</h5>
                 <h5>Please specify the substance if you know.</h5>
-                <input type="checkbox" name="substances[]" value="subs1"> Substance 1<br>
-                <input type="checkbox" name="substances[]" value="subs2"> Substance 2<br>
+                <input type="checkbox" name="substances[]" value="Carbohydrate"> Carbohydrate<br>
+                <input type="checkbox" name="substances[]" value="Protein"> Protein<br>
                 <input type="checkbox" name="substances[]" value="not-listed"> Not listed<br><br>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>

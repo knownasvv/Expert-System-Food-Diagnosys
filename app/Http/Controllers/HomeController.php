@@ -40,6 +40,7 @@ class HomeController extends Controller
 
     function secondProduct(Request $request) {
         $input = $request->input('substances');
+        if($input[0] == 'not-listed') $input = $input[0];
         echo("Last answer: ");
         if(is_array($input)) {
             echo("<br>");
@@ -67,13 +68,14 @@ class HomeController extends Controller
 
     function secondOrganicCheck(Request $request) {
         $input = $request->input('substances');
+        if($input[0] == 'not-listed') $input = $input[0];
         echo("Last answer: ");
         if(is_array($input)) {
             echo("<br>");
             foreach($input as $i) echo("-> ". $i ."<br>");
         } else echo($input);
-        if($input != 'not-listed') return view('home', ['secondProduct' => 'yes']);
-        else if($input == 'not-listed') return view('home', ['systemEnd' => 'not-exist']);
+        if($input == 'not-listed') return view('home', ['systemEnd' => 'not-exist']);
+        else if($input != 'not-listed') return view('home', ['secondProduct' => 'yes']);
         else return view('home');
     }
 
