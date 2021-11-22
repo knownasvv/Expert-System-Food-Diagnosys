@@ -8,6 +8,7 @@
 
         {{-- Semantic UI CDN --}}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
     </head>
     <body>
@@ -34,7 +35,7 @@
                 <form class="text-center" action="{{ url("/first-no") }}" method="post">
                     {{ csrf_field() }}
                     <h5>Do you have any disease? Please specify the disease below.</h5>
-                    <input type="text" name="diseaseInput" />
+                    <input type="text" name="diseases" />
                     <button type="submit" name="action" value="yes" class="btn btn-primary">Submit</button>
                 </form>
             @endif
@@ -44,8 +45,11 @@
                 <form action="{{ url("/second-product") }}" method="post" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     <h5>Are there any of the substances in the product that suits with below?.</h5>
-                    <input type="checkbox" name="substances[]" value="Carbohydrate">Carbohydrate<br>
-                    <input type="checkbox" name="substances[]" value="Protein">Protein<br>
+                    @if(isset($substance_product))
+                        @foreach($substance_product as $subs)
+                        <input type="checkbox" name="substances[]" value="{{ $subs->{"kode zat"} }}">{{ $subs->{"nama zat"} }}<br>
+                        @endforeach
+                    @endif
                     <input type="checkbox" name="substances[]" value="not-listed"> Not listed<br><br>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
@@ -62,7 +66,29 @@
             @if (isset($secondProduct) && $secondProduct == 'yes')
                 <form class="text-center" action="{{ url("/second-product-check") }}" method="post">
                     {{ csrf_field() }}
-                    <h5>The system determined that, [FOOD] is better avoided if you have [LIST_DISEASES].</h5>
+                    <h5>The system determined that, the food you ate excessively is better avoided if you have disease in:</h5>
+
+                    <ol>
+                        @if(isset($list_diseases))
+                            @foreach($list_disease_types as $dt)
+                                <?php $jenisNow = $dt->{'jenis penyakit'}; ?>
+                                <li>
+                                    {{-- <input type="checkbox" class="list_disease_types" name="diseases[]" value="{{ $jenisNow }}"> --}}
+                                    {{ $dt->{'jenis penyakit'} }}
+                                    <ul>
+                                        @foreach($list_diseases as $d)
+                                            @if($jenisNow == $d->{'jenis penyakit'} && $d->{'nama penyakit'} != "general")
+                                                <li>
+                                                    <input type="checkbox" class="list_diseases" name="diseases[]" value="{{ $d->{'nama penyakit'} }}">
+                                                    {{ $d->{'nama penyakit'} }}
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @endforeach
+                        @endif
+                            </ol>
                     <h5>Do you have any of these disease resulted?</h5>
                     <button type="submit" name="action" value="yes" class="btn btn-primary">Yes</button>
                     <button type="submit" name="action" value="no" class="btn btn-primary">No</button>
@@ -70,7 +96,7 @@
             @elseif (isset($secondProduct) && $secondProduct == 'no')
                 <form class="text-center" action="{{ url("/ending") }}" method="post">
                     {{ csrf_field() }}
-                    <h5>The system determined that, [FOOD] is safe no matter what disease you have.</h5>
+                    <h5>The system determined that, the food you ate excessively is safe no matter what disease you have.</h5>
                     <h5>But remember, eating excessive food isn't always good for your health.</h5>
                     <h5>Do you want to start from the beginning?</h5>
                     <button type="submit" name="action" value="yes" class="btn btn-primary">Yes</button>
@@ -82,10 +108,12 @@
             @if (isset($secondOrganic) && $secondOrganic == 'yes')
             <form action="{{ url("/second-organic-check") }}" method="post" enctype="multipart/form-data">
                 {{ csrf_field() }}
-                <h5>Are there any of the substance in the food you know and suits list below?</h5>
-                <h5>Please specify the substance if you know.</h5>
-                <input type="checkbox" name="substances[]" value="Carbohydrate"> Carbohydrate<br>
-                <input type="checkbox" name="substances[]" value="Protein"> Protein<br>
+                <h5>Are there any of the substances in the product that suits with below?.</h5>
+                @if(isset($substance_organic))
+                    @foreach($substance_organic as $subs)
+                    <input type="checkbox" name="substances[]" value="{{ $subs->{"kode zat"} }}">{{ $subs->{"nama zat"} }}<br>
+                    @endforeach
+                @endif
                 <input type="checkbox" name="substances[]" value="not-listed"> Not listed<br><br>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
@@ -95,9 +123,29 @@
             @if (isset($thirdYes) && $thirdYes == 'yes')
                 <form class="text-center" action="{{ url("/ending") }}" method="post">
                     {{ csrf_field() }}
-                    <h5>The system recommends you to avoid [SUBSTANCE_TO_AVOID].</h5>
-                    <h5>For example [FOOD] which has [SUBSTANCE]</h5>
+                    <h5>The system recommends you to avoid food(s) stated in table below.</h5>
+                    <table  class="table">
+                        <tr>
+                            <th>DISEASES</th>
+                            <th>SUBSTANCES</th>
+                            <th>FOOD TYPES</th>
+                            <th>FOODS</th>
+                        </tr>
+                        @if (isset($avoid))
+                        {{-- <?= dd($avoid);?> --}}
+                            @foreach ($avoid as $a)
+                                <tr>
+                                    <td>{{ $a->{'nama penyakit'} }}</td>
+                                    <td>{{ $a->{'nama zat'} }}</td>
+                                    <td>{{ $a->{'jenis makanan'} }}</td>
+                                    <td>{{ $a->{'isi makanan'} }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </table>
+                    <br><br>
                     <h5>Do you want to start from the beginning?</h5>
+
                     <button type="submit" name="action" value="yes" class="btn btn-primary">Yes</button>
                     <button type="submit" name="action" value="no" class="btn btn-primary">No</button>
                 </form>

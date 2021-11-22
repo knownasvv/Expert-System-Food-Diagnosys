@@ -14,19 +14,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'HomeController@index');
-Route::get('/home', 'HomeController@index');
+Route::get('home', 'HomeController@index');
 
-Route::post('/first', 'HomeController@first');
-Route::post('/first-yes', 'HomeController@firstYes');
-Route::post('/first-no', 'HomeController@firstNo');
+Route::post('first', 'HomeController@first');
+Route::post('first-yes', 'HomeController@firstYes');
+Route::post('first-no', 'HomeController@firstNo');
 
-Route::post('/second-product', 'HomeController@secondProduct');
-Route::post('/second-product-check', 'HomeController@secondProductCheck');
+Route::post('second-product', 'HomeController@secondProduct');
+Route::post('second-product-check', 'HomeController@secondProductCheck');
 
-Route::post('/second-organic', 'HomeController@secondOrganic');
-Route::post('/second-organic-check', 'HomeController@secondOrganicCheck');
+Route::post('second-organic', 'HomeController@secondOrganic');
+Route::post('second-organic-check', 'HomeController@secondOrganicCheck');
 
-Route::post('/ending', 'HomeController@ending');
+Route::post('ending', 'HomeController@ending');
 
 
 
