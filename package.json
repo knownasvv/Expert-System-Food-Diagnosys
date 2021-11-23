@@ -16,6 +16,9 @@
         "postcss": "^8.1.14"
     },
     "dependencies": {
-        "jquery": "^3.6.0"
+        "datatables.net": "^1.11.3",
+        "datatables.net-dt": "^1.11.3",
+        "jquery": "^3.6.0",
+        "pretty-checkbox": "^3.0.3"
     }
 }

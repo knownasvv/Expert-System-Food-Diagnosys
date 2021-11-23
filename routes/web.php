@@ -18,6 +18,7 @@ Route::get('home', 'HomeController@index');
 
 Route::post('first', 'HomeController@first');
 Route::post('first-yes', 'HomeController@firstYes');
+Route::post('before-first-no', 'HomeController@beforeFirstNo');
 Route::post('first-no', 'HomeController@firstNo');
 
 Route::post('second-product', 'HomeController@secondProduct');
@@ -28,7 +29,4 @@ Route::post('second-organic-check', 'HomeController@secondOrganicCheck');
 
 Route::post('ending', 'HomeController@ending');
 
-
-
-
-
+Route::get('search', 'SearchController@search');
