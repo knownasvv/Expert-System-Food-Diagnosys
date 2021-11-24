@@ -33,6 +33,15 @@
                 }
             });
 
+            $('#submit-substance').click(function () {
+                checked = $("input[type=checkbox]:checked").length;
+
+                if (!checked) {
+                    $('#myAlert').css('display', 'block');
+                    return false;
+                }
+            });
+
             $('#submit-to-second-product').click(function () {
                 checked = $("input[type=checkbox]:checked").length;
 
@@ -143,10 +152,10 @@
 <body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-light" style="background: #5CB85C; color: white !important;">
         <div class="container d-flex justify-content-center">
-            <a class="navbar-brand bg-light p-1" href="#" style="border-radius: 100%">
+            <a class="navbar-brand bg-light p-1" href="/" style="border-radius: 100%">
                 <img src="{{ asset('images/Logo.png')}}" width="32" height="32">
             </a>
-            <a href="#" style="text-decoration: none; color: white;">
+            <a href="/" style="text-decoration: none; color: white;">
                 <h5 style="font-weight: bold; line-height: 1rem;" class="p-0 m-0">FOODN'T</h5>
             </a>
         </div>
@@ -288,12 +297,22 @@
                         <label for="disease_dropdown">
                             <h5>Please specify the disease.</h5>
                         </label>
-                        <select name="diseases" id="disease_dropdown" class="col-6 custom-select">
-                            <?php $i = 0; ?>
-                            @foreach ($disease_dropdown as $dd)
-                            <option name="disease_<?= $i++ ?>" value={{ $dd->{'nama penyakit'} }}>
-                                {{ ucfirst($dd->{'nama penyakit'}) }}</option>
-                            @endforeach
+                        <select name="diseases" id="disease_dropdown" class="col-6 custom-select" required>
+                            <option name="none" value="">---Select disease---</option>
+                            @if(isset($list_diseases))
+                                @foreach($list_disease_types as $dt)
+                                    <?php $jenisNow = $dt->{'jenis penyakit'}; $i = 0; ?>
+                                    <optgroup label="{{ ucfirst($dt->{'jenis penyakit'}) }}">
+                                        @foreach($list_diseases as $d)
+                                            @if($jenisNow == $d->{'jenis penyakit'})
+                                                <option name="disease_<?= $i++ ?>" value={{ $d->{'nama penyakit'} }}>
+                                                    {{ ucfirst($d->{'nama penyakit'}) }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="buttons d-flex justify-content-end">
@@ -320,6 +339,15 @@
                 <form class="form-control card-body" action="{{ url("/second-product") }}" method="post"
                     enctype="multipart/form-data">
                     {{ csrf_field() }}
+                    <div class="alert alert-danger fade show" role="alert" id="myAlert" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
+                            aria-label="Warning:">
+                            <path
+                                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                        </svg>
+                        <span>You must check at least one checkbox.</span>
+                    </div>
                     <h5>Are there any of the substances in the product that suits with below?</h5>
                     <div class="row pl-5 container-fluid" style="background: none;">
                         @foreach($substance_product as $subs)
@@ -353,14 +381,24 @@
                     <h5>What is the organic food called?</h5>
                     <div class="form-group d-flex justify-content-between">
                         <label for="organicFoodInput">
-                            <h5>Please specify the disease.</h5>
+                            <h5>Please specify the food name.</h5>
                         </label>
-                        <select name="organicFoodInput" id="organicFoodInput" class="col-6 custom-select">
-                            <?php $i = 0; ?>
-                            @foreach ($food_dropdown as $dd)
-                            <option name="disease_<?= $i++ ?>" value={{ $dd->{'kode makanan'} }}>
-                                {{ ucfirst($dd->{'isi makanan'}) }}</option>
-                            @endforeach
+                        <select name="organicFoodInput" id="organicFoodInput" class="col-6 custom-select" required>
+                            <option name="none" value="">---Select organic food---</option>
+                            @if(isset($food_dropdown))
+                                @foreach($food_dropdown_types as $dt)
+                                    <?php $jenisNow = $dt->{'jenis makanan'}; $i = 0; ?>
+                                    <optgroup label="{{ ucfirst($dt->{'jenis makanan'}) }}">
+                                        @foreach($food_dropdown as $d)
+                                            @if($jenisNow == $d->{'jenis makanan'})
+                                                <option name="makanan_<?= $i++ ?>" value="{{ $d->{'isi makanan'} }}">
+                                                    {{ ucfirst($d->{'isi makanan'}) }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="buttons d-flex justify-content-end">
@@ -443,6 +481,15 @@
                 <form action="{{ url("/second-organic-check") }}" class="form-control card-body" method="post"
                     enctype="multipart/form-data">
                     {{ csrf_field() }}
+                    <div class="alert alert-danger fade show" role="alert" id="myAlert" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
+                            aria-label="Warning:">
+                            <path
+                                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                        </svg>
+                        <span>You must check at least one checkbox.</span>
+                    </div>
                     <h5>We are not able to find any result regarding the food you input.</h5>
                     <h5>Are there any of the substances in the product that suits with below?.</h5>
                     @if(isset($substance_organic))
@@ -470,7 +517,7 @@
                     @endif
 
                     <div class="container buttons">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="submit-substance">Submit</button>
                     </div>
                 </form>
                 @endif
@@ -478,7 +525,7 @@
                 {{-- THIRD YES/NO --}}
                 @if (isset($thirdYes) && $thirdYes == 'yes')
                 <h5 class="card-header">Recommendation Table</h5>
-                <form class="text-center card-body" action="{{ url("/ending") }}" method="post">
+                <form class="text-center card-body " action="{{ url("/ending") }}" method="post">
                     {{ csrf_field() }}
                     <h5>The system recommends you to avoid food(s) stated in table below.</h5>
                     <table id="disease_list" class="table table-striped table-hover border-dark table-responsive">
@@ -492,7 +539,6 @@
                         </thead>
                         <tbody>
                             @if (isset($avoid))
-                            {{-- <?= dd($avoid);?> --}}
                             @foreach ($avoid as $a)
                             <tr>
                                 <td>{{ ucfirst($a->{'nama penyakit'}) }}</td>
@@ -537,14 +583,9 @@
                 {{-- SYSTEM-END NO-REPEAT/NO-EXIST --}}
                 @if (isset($systemEnd) && $systemEnd == 'no-repeat')
                 <h5 class="card-header">Result</h5>
-                <form class="text-center card-body" action="{{ url("/ending") }}" method="post">
+                <form class="card-body d-flex align-items-center justify-content-center" action="{{ url("/ending") }}" method="post">
                     {{ csrf_field() }}
                     <h5>Well then, thank you for using our system!</h5>
-                    <h5>Do you want to start from the beginning?</h5>
-                    <div class="container buttons">
-                        <button type="submit" name="action" value="yes" class="btn btn-primary">Yes</button>
-                        <button type="submit" name="action" value="no" class="btn btn-primary">No</button>
-                    </div>
                 </form>
                 @elseif (isset($systemEnd) && $systemEnd == 'not-exist')
                 <h5 class="card-header">Result</h5>

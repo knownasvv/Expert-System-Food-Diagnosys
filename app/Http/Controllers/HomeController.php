@@ -37,18 +37,28 @@ class HomeController extends Controller
             ->get();
 
         $organic_food = DB::table('tb_foods')
-            ->select('tb_foods.kode makanan','tb_foods.isi makanan')
+        ->join('tb_typefoods', 'tb_foods.kode makanan', '=', 'tb_typefoods.kode makanan')
+
+            ->select('tb_foods.kode makanan','tb_foods.isi makanan', 'tb_typefoods.jenis makanan')
             ->where('tb_foods.tipe makanan', "nature")
-            ->groupBy('tb_foods.isi makanan')
+            ->distinct()
             ->orderBy('tb_foods.isi makanan', 'asc')
             ->get()
             ->all();
 
+        $organic_food_types = DB::table('tb_typefoods')
+            ->select('tb_typefoods.jenis makanan')
+            ->join('tb_foods', 'tb_typefoods.kode makanan', '=', 'tb_foods.kode makanan')
+            ->where('tb_foods.tipe makanan', "nature")
+            ->groupBy('tb_typefoods.jenis makanan')
+            ->orderBy('tb_typefoods.jenis makanan', 'asc')
+            ->get()
+            ->all();
         if($input == 'product') return view('home', [
             'firstYes' => 'product',
             'substance_product' => $substance_product, 'lastInput' => $input
         ]);
-        else if($input == 'organic') return view('home', ['firstYes' => 'organic', 'lastInput' => $input, 'food_dropdown' => $organic_food]);
+        else if($input == 'organic') return view('home', ['firstYes' => 'organic', 'lastInput' => $input, 'food_dropdown' => $organic_food, 'food_dropdown_types' => $organic_food_types]);
         else return view('home');
     }
 
@@ -56,12 +66,19 @@ class HomeController extends Controller
         $input = $request->action;
         // echo("Last answer: ". $input);
         $dis = DB::table('tb_disease')
-            ->select('tb_disease.nama penyakit')
-            ->groupBy('tb_disease.nama penyakit')
+            ->select('tb_disease.nama penyakit', 'tb_disease.jenis penyakit')
             ->orderBy('tb_disease.nama penyakit', 'asc')
+            ->distinct()
             ->get()
             ->all();
-        if($input == 'yes') return view('home', ['beforeFirstNo' => 'yes', 'lastInput' => $input, 'disease_dropdown' => $dis]);
+
+        $dis_type = DB::table('tb_disease')
+            ->select('tb_disease.jenis penyakit')
+            ->groupby('tb_disease.jenis penyakit')
+            ->get()
+            ->all();
+
+        if($input == 'yes') return view('home', ['beforeFirstNo' => 'yes', 'lastInput' => $input, 'list_diseases' => $dis, 'list_disease_types' => $dis_type]);
         else if($input == 'no') return view('home', ['beforeFirstNo' => 'no', 'lastInput' => $input]);
         else return view('home');
     }
@@ -169,13 +186,12 @@ class HomeController extends Controller
 
     function secondOrganic(Request $request) {
         $input = $request->organicFoodInput;
-        // echo("Last answer: ". $input);
 
         $organic_food = DB::table('tb_foods')
             ->select('tb_foods.isi makanan')
             ->where([
                 ['tb_foods.tipe makanan', '=', 'nature'],
-                ['tb_foods.isi makanan', 'like', "%".$input."%"]
+                ['tb_foods.isi makanan', 'like', '%'.$input.'%']
             ])
             ->get();
 
@@ -211,7 +227,7 @@ class HomeController extends Controller
                                     ->get();
             return view('home', [
                 'secondOrganic' => 'yes',
-                'substance_organic' => $substance_organic, 'lastInput' => $input
+                'substance_organic' => $substance_organic, 'lastInput' => $organic_food
             ]);
         }
     }
