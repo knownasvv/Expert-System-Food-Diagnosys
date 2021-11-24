@@ -36,18 +36,32 @@ class HomeController extends Controller
             ->distinct()
             ->get();
 
+        $organic_food = DB::table('tb_foods')
+            ->select('tb_foods.kode makanan','tb_foods.isi makanan')
+            ->where('tb_foods.tipe makanan', "nature")
+            ->groupBy('tb_foods.isi makanan')
+            ->orderBy('tb_foods.isi makanan', 'asc')
+            ->get()
+            ->all();
+
         if($input == 'product') return view('home', [
             'firstYes' => 'product',
             'substance_product' => $substance_product, 'lastInput' => $input
         ]);
-        else if($input == 'organic') return view('home', ['firstYes' => 'organic', 'lastInput' => $input]);
+        else if($input == 'organic') return view('home', ['firstYes' => 'organic', 'lastInput' => $input, 'food_dropdown' => $organic_food]);
         else return view('home');
     }
 
     function beforeFirstNo(Request $request) {
         $input = $request->action;
         // echo("Last answer: ". $input);
-        if($input == 'yes') return view('home', ['beforeFirstNo' => 'yes', 'lastInput' => $input]);
+        $dis = DB::table('tb_disease')
+            ->select('tb_disease.nama penyakit')
+            ->groupBy('tb_disease.nama penyakit')
+            ->orderBy('tb_disease.nama penyakit', 'asc')
+            ->get()
+            ->all();
+        if($input == 'yes') return view('home', ['beforeFirstNo' => 'yes', 'lastInput' => $input, 'disease_dropdown' => $dis]);
         else if($input == 'no') return view('home', ['beforeFirstNo' => 'no', 'lastInput' => $input]);
         else return view('home');
     }
